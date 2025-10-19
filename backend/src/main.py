@@ -46,11 +46,21 @@ async def get_all_transactions():
 
 
 @app.post("/process-statement/{bank_name}/{year}/{month}")
-async def process_statement(bank_name: str, year: int, month: int, statement: UploadFile):
+async def process_statement(
+    bank_name: str, year: int, month: int, statement: UploadFile, settings: Annotated[Settings, Depends(get_settings)]
+):
     """
     Processes the uploaded statement and stores the result.
+    Also stores the raw uploaded file.
     Does not return the result - this must be retrieved by one of the above GET methods.
     """
-    print(statement.filename)
 
-    return {"status": "processing"}
+    output_dir_path = settings.data_directory_path / bank_name
+    output_file_name = f"Statement_{year}_{month}"
+    raw_dir_path = output_dir_path / "raw"
+    parsed_dir_path = output_dir_path / "parsed"
+    raw_dir_path.mkdir(parents=True, exist_ok=True)
+    parsed_dir_path.mkdir(parents=True, exist_ok=True)
+    raw_file_path = raw_dir_path / f"{output_file_name}.pdf"
+    # parsed_file_path = parsed_dir_path / f"{output_file_name}.json"
+    raw_file_path.write_bytes(statement.file.read())
