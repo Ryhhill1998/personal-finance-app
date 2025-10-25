@@ -1,6 +1,9 @@
 from typing import Annotated
 
+from fastapi.params import Depends
+
 from src.services.statement_parser.model_statement_parser import ModelStatementParser
+from src.services.storage.local_storage_service import LocalStorageService
 from src.settings import Settings
 
 
@@ -8,7 +11,7 @@ def get_settings() -> Settings:
     return Settings()
 
 
-def get_model_service(settings: Annotated[Settings, get_settings]) -> ModelStatementParser:
+def get_model_statement_parser(settings: Annotated[Settings, Depends(get_settings)]) -> ModelStatementParser:
     return ModelStatementParser(
         api_key=settings.google_gen_ai_api_key,
         model_name=settings.google_gen_ai_model_name,
@@ -17,3 +20,7 @@ def get_model_service(settings: Annotated[Settings, get_settings]) -> ModelState
         top_p=settings.google_gen_ai_model_top_p,
         instructions=settings.google_gen_ai_model_instructions,
     )
+
+
+def get_local_storage_service(settings: Annotated[Settings, Depends(get_settings)]) -> LocalStorageService:
+    return LocalStorageService(settings.local_storage_dir_path)

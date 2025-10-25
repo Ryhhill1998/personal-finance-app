@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     google_gen_ai_model_top_p: float
     google_gen_ai_model_prompt_path: Path
 
-    data_directory_path: Path
+    local_storage_dir_path: Path
 
     @computed_field
     @property

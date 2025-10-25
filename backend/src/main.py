@@ -1,11 +1,11 @@
-import json
 from typing import Annotated
 
 from fastapi import FastAPI, UploadFile
 from fastapi.params import Depends
 
-from src.dependencies import get_settings, get_model_service
+from src.dependencies import get_settings, get_model_statement_parser, get_local_storage_service
 from src.services.statement_parser.model_statement_parser import ModelStatementParser
+from src.services.storage.storage_service import StorageService
 from src.settings import Settings
 
 app = FastAPI()
@@ -53,8 +53,8 @@ async def process_statement(
     year: int,
     month: int,
     statement: UploadFile,
-    settings: Annotated[Settings, Depends(get_settings)],
-    model_service: Annotated[ModelStatementParser, Depends(get_model_service)],
+    statement_parser: Annotated[ModelStatementParser, Depends(get_model_statement_parser)],
+    storage_service: Annotated[StorageService, Depends(get_local_storage_service)],
 ):
     """
     Processes the uploaded statement and stores the result.
@@ -62,19 +62,16 @@ async def process_statement(
     Does not return the result - this must be retrieved by one of the above GET methods.
     """
 
-    output_dir_path = settings.data_directory_path / bank_name
-    output_file_name = f"Statement_{year}_{month}"
-    raw_dir_path = output_dir_path / "raw"
-    parsed_dir_path = output_dir_path / "parsed"
-    raw_dir_path.mkdir(parents=True, exist_ok=True)
-    parsed_dir_path.mkdir(parents=True, exist_ok=True)
-    raw_file_path = raw_dir_path / f"{output_file_name}.pdf"
-    parsed_file_path = parsed_dir_path / f"{output_file_name}.json"
+    # extract bytes from uploaded statement
     statement_bytes = statement.file.read()
-    raw_file_path.write_bytes(statement_bytes)
+
+    # store uploaded statement
+    storage_service.store_statement(statement_bytes=statement_bytes, bank_name=bank_name, year=year, month=month)
 
     # get json data from pdf via model
-    parsed_transactions = await model_service.parse_transactions(statement_bytes.decode())
+    parsed_transactions = await statement_parser.parse_transactions(statement_bytes.decode())
 
-    with open(parsed_file_path, "w") as parsed_file:
-        json.dump(parsed_transactions.model_dump_json(), parsed_file)
+    # store parsed transactions
+    storage_service.store_parsed_transactions(
+        parsed_transactions=parsed_transactions, bank_name=bank_name, year=year, month=month
+    )
