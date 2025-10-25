@@ -12,7 +12,7 @@ class LocalStorageService(StorageService):
     def store_statement(self, statement_bytes: bytes, bank_name: str, year: int, month: int) -> None:
         dir_path = self.storage_dir_path / bank_name / "raw"
         dir_path.mkdir(parents=True, exist_ok=True)
-        file_path = dir_path / f"Statement_{year}_{month}.pdf"
+        file_path = dir_path / f"Statement_{year}_{month:02}.pdf"
         file_path.write_bytes(statement_bytes)
 
     def get_statement(self, bank_name: str, year: int, month: int) -> str:
