@@ -3,7 +3,7 @@ from pathlib import Path
 from src.models import ParsedTransactions
 
 
-class StorageService:
+class LocalStorageService:
     def __init__(self, storage_dir_path: Path):
         self.storage_dir_path = storage_dir_path
 
