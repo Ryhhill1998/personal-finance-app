@@ -17,7 +17,7 @@ class LocalStorageService(StorageService):
 
     def get_statement(self, bank_name: str, year: int, month: int) -> str:
         dir_path = self.storage_dir_path / bank_name / "raw"
-        file_path = dir_path / f"Statement_{year}_{month}.pdf"
+        file_path = dir_path / f"Statement_{year}_{month:02}.pdf"
         return file_path.read_text()
 
     def store_parsed_transactions(
