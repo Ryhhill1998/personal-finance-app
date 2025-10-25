@@ -112,8 +112,67 @@ def test_store_parsed_transactions(tmp_path: Path, local_storage_service: LocalS
         assert json_data == expected_json_data
 
 
-def test_get_parsed_transactions(local_storage_service: LocalStorageService) -> None:
+def test_get_parsed_transactions(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
     # ARRANGE
+    json_data = {
+        "transactions": [
+            {
+                "date": "2025-01-01",
+                "description": "Transaction 1",
+                "amount_in": 100,
+                "amount_out": 0,
+                "balance": 500,
+            },
+            {
+                "date": "2025-01-05",
+                "description": "Transaction 2",
+                "amount_in": 0,
+                "amount_out": 150,
+                "balance": 350,
+            },
+            {
+                "date": "2025-01-21",
+                "description": "Transaction 3",
+                "amount_in": 1000,
+                "amount_out": 0,
+                "balance": 1350,
+            },
+        ]
+    }
+
+    dir_path = tmp_path / "Test Bank" / "parsed"
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+    with open(dir_path / f"Statement_2025_01.json", "w") as parsed_transactions_file:
+        json.dump(json_data, parsed_transactions_file)
+
     # ACT
+    parsed_transactions = local_storage_service.get_parsed_transactions(bank_name="Test Bank", year=2025, month=1)
+
     # ASSERT
-    pass
+    expected_parsed_transactions = ParsedTransactions(
+        transactions=[
+            Transaction(
+                date=date.fromisoformat("2025-01-01"),
+                description="Transaction 1",
+                amount_in=100,
+                amount_out=0,
+                balance=500,
+            ),
+            Transaction(
+                date=date.fromisoformat("2025-01-05"),
+                description="Transaction 2",
+                amount_in=0,
+                amount_out=150,
+                balance=350,
+            ),
+            Transaction(
+                date=date.fromisoformat("2025-01-21"),
+                description="Transaction 3",
+                amount_in=1000,
+                amount_out=0,
+                balance=1350,
+            ),
+        ]
+    )
+    assert parsed_transactions == expected_parsed_transactions
