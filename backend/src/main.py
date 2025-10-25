@@ -1,16 +1,11 @@
-import datetime
 import json
 from typing import Annotated
 
 from fastapi import FastAPI, UploadFile
 from fastapi.params import Depends
-from pydantic import BaseModel
-from pydantic_ai import Agent
-from pydantic_ai.models.google import GoogleModelSettings, GoogleModel
-from pydantic_ai.providers.google import GoogleProvider
 
 from src.dependencies import get_settings, get_model_service
-from src.model_service import ModelService
+from src.services.statement_parser.model_statement_parser import ModelStatementParser
 from src.settings import Settings
 
 app = FastAPI()
@@ -59,7 +54,7 @@ async def process_statement(
     month: int,
     statement: UploadFile,
     settings: Annotated[Settings, Depends(get_settings)],
-    model_service: Annotated[ModelService, Depends(get_model_service)],
+    model_service: Annotated[ModelStatementParser, Depends(get_model_service)],
 ):
     """
     Processes the uploaded statement and stores the result.
@@ -77,8 +72,6 @@ async def process_statement(
     parsed_file_path = parsed_dir_path / f"{output_file_name}.json"
     statement_bytes = statement.file.read()
     raw_file_path.write_bytes(statement_bytes)
-
-    print(settings)
 
     # get json data from pdf via model
     parsed_transactions = await model_service.parse_transactions(statement_bytes.decode())

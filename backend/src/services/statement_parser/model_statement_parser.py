@@ -7,12 +7,12 @@ from loguru import logger
 from src.models import ParsedTransactions
 
 
-class ModelServiceException(Exception):
+class ModelStatementParserException(Exception):
     def __init__(self, message: str):
         super().__init__(message)
 
 
-class ModelService:
+class ModelStatementParser:
     def __init__(
         self,
         api_key: str,
@@ -51,10 +51,10 @@ class ModelService:
             return result.output
         except UsageLimitExceeded as e:
             logger.warning(f"Usage limit exceeded: {str(e)}")
-            raise ModelServiceException(f"Usage limit exceeded: {str(e)}") from e
+            raise ModelStatementParserException(f"Usage limit exceeded: {str(e)}") from e
         except UnexpectedModelBehavior as e:
             logger.warning(f"Unexpected model behavior: {str(e)}")
-            raise ModelServiceException(f"Unexpected model behavior: {str(e)}") from e
+            raise ModelStatementParserException(f"Unexpected model behavior: {str(e)}") from e
         except AgentRunError as e:
             logger.warning(f"Agent run error: {str(e)}")
-            raise ModelServiceException(f"Agent run error: {str(e)}") from e
+            raise ModelStatementParserException(f"Agent run error: {str(e)}") from e
