@@ -19,4 +19,4 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def google_gen_ai_model_instructions(self) -> str:
-        return self.model_prompt_path.read_text(encoding="utf-8")
+        return self.google_gen_ai_model_prompt_path.read_text(encoding="utf-8")

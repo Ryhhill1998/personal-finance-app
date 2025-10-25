@@ -8,8 +8,8 @@ Each transaction should be a JSON object with the following keys:
 
 "date" (format: YYYY-MM-dd)
 "description" (string, keep full text, even if it spans multiple lines)
-"in" (float or null)
-"out" (float or null)
+"amount_in" (float or null)
+"amount_out" (float or null)
 "balance" (float or null).
 If a value is not present, use null.
 
@@ -23,8 +23,8 @@ Return ONLY a JSON array (no explanations, no prose), e.g.:
  {
  "date": "01 Sep 25",
  "description": "TFL TRAVEL CH",
- "in": null,
- "out": 7.00,
+ "amount_in": null,
+ "amount_out": 7.00,
  "balance": 110.20
  },
  ...

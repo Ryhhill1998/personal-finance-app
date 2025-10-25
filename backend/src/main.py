@@ -84,4 +84,4 @@ async def process_statement(
     parsed_transactions = await model_service.parse_transactions(statement_bytes.decode())
 
     with open(parsed_file_path, "w") as parsed_file:
-        json.dump(parsed_transactions.model_dump(), parsed_file)
+        json.dump(parsed_transactions.model_dump_json(), parsed_file)

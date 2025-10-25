@@ -1,3 +1,4 @@
+from datetime import date
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Generator
@@ -5,8 +6,9 @@ from typing import Any, Generator
 import pytest
 from fastapi.testclient import TestClient
 
-from src.dependencies import get_settings
+from src.dependencies import get_settings, get_model_service
 from src.main import app
+from src.models import ParsedTransactions, Transaction
 from src.settings import Settings
 
 
@@ -22,6 +24,42 @@ def override_get_settings(tmp_path: Path) -> Generator[None, Any, None]:
         data_directory_path=tmp_path,
     )
     app.dependency_overrides[get_settings] = lambda: test_settings
+    yield
+
+    app.dependency_overrides = {}
+
+
+@pytest.fixture
+def override_get_model_service(tmp_path: Path) -> Generator[None, Any, None]:
+    class MockModelService:
+        async def parse_transactions(self, statement: str) -> ParsedTransactions:
+            return ParsedTransactions(
+                transactions=[
+                    Transaction(
+                        date=date.fromisoformat("2025-01-01"),
+                        description="Transaction 1",
+                        amount_in=100,
+                        amount_out=0,
+                        balance=500,
+                    ),
+                    Transaction(
+                        date=date.fromisoformat("2025-01-05"),
+                        description="Transaction 2",
+                        amount_in=0,
+                        amount_out=150,
+                        balance=350,
+                    ),
+                    Transaction(
+                        date=date.fromisoformat("2025-01-21"),
+                        description="Transaction 3",
+                        amount_in=1000,
+                        amount_out=0,
+                        balance=1350,
+                    ),
+                ]
+            )
+
+    app.dependency_overrides[get_model_service] = lambda: MockModelService()
     yield
 
     app.dependency_overrides = {}
@@ -48,7 +86,7 @@ def test_get_all_transactions():
     assert response.json() == {"msg": "Hello World"}
 
 
-def test_process_statement(tmp_path: Path, override_get_settings):
+def test_process_statement(tmp_path: Path, override_get_settings: None, override_get_model_service: None) -> None:
     bank_name = "test_bank"
     year = 2025
     month = 9
@@ -66,4 +104,4 @@ def test_process_statement(tmp_path: Path, override_get_settings):
     raw_file_path = output_dir_path / "raw" / f"{expected_file_name}.pdf"
     parsed_file_path = output_dir_path / "parsed" / f"{expected_file_name}.json"
     assert raw_file_path.is_file()
-    # assert parsed_file_path.is_file()
+    assert parsed_file_path.is_file()
