@@ -31,4 +31,10 @@ class LocalStorageService(StorageService):
             json.dump(parsed_transactions.model_dump_json(), parsed_file)
 
     def get_parsed_transactions(self, bank_name: str, year: int, month: int) -> ParsedTransactions:
-        pass
+        dir_path = self.storage_dir_path / bank_name / "parsed"
+        file_path = dir_path / f"Statement_{year}_{month}.json"
+
+        with open(file_path) as parsed_file:
+            json_data = json.load(parsed_file)
+
+        return ParsedTransactions(**json_data)

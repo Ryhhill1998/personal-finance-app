@@ -19,13 +19,15 @@ Keep chronological order.
 
 Output format:
 Return ONLY a JSON array (no explanations, no prose), e.g.:
-[
- {
- "date": "01 Sep 25",
- "description": "TFL TRAVEL CH",
- "amount_in": null,
- "amount_out": 7.00,
- "balance": 110.20
- },
- ...
- ]
+{
+    "transactions": [
+        {
+            "date": "2025-01-01",
+            "description": "TFL TRAVEL CH",
+            "amount_in": null,
+            "amount_out": 7.00,
+            "balance": 110.20
+        },
+        ...
+    ]
+}
