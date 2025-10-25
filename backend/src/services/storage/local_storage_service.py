@@ -25,14 +25,14 @@ class LocalStorageService(StorageService):
     ) -> None:
         dir_path = self.storage_dir_path / bank_name / "parsed"
         dir_path.mkdir(parents=True, exist_ok=True)
-        file_path = dir_path / f"Statement_{year}_{month}.json"
+        file_path = dir_path / f"Statement_{year}_{month:02}.json"
 
         with open(file_path, "w") as parsed_file:
-            json.dump(parsed_transactions.model_dump_json(), parsed_file)
+            parsed_file.write(parsed_transactions.model_dump_json())
 
     def get_parsed_transactions(self, bank_name: str, year: int, month: int) -> ParsedTransactions:
         dir_path = self.storage_dir_path / bank_name / "parsed"
-        file_path = dir_path / f"Statement_{year}_{month}.json"
+        file_path = dir_path / f"Statement_{year}_{month:02}.json"
 
         with open(file_path) as parsed_file:
             json_data = json.load(parsed_file)

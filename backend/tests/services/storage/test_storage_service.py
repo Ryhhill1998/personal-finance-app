@@ -1,7 +1,10 @@
+import json
+from datetime import date
 from pathlib import Path
 
 import pytest
 
+from src.models import ParsedTransactions, Transaction
 from src.services.storage.local_storage_service import LocalStorageService
 
 
@@ -26,9 +29,7 @@ def test_store_statement_stores_expected_data_in_expected_location(
         assert statement_file.read() == statement_content
 
 
-def test_get_statement(
-    tmp_path: Path, local_storage_service: LocalStorageService
-) -> None:
+def test_get_statement(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
     # ARRANGE
     statement_content = "PDF-1.4 fake content"
     bank_name = "Test Bank"
@@ -46,9 +47,73 @@ def test_get_statement(
     assert statement == statement_content
 
 
-def test_store_parsed_transactions() -> None:
-    pass
+def test_store_parsed_transactions(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
+    # ARRANGE
+    parsed_transactions = ParsedTransactions(
+        transactions=[
+            Transaction(
+                date=date.fromisoformat("2025-01-01"),
+                description="Transaction 1",
+                amount_in=100,
+                amount_out=0,
+                balance=500,
+            ),
+            Transaction(
+                date=date.fromisoformat("2025-01-05"),
+                description="Transaction 2",
+                amount_in=0,
+                amount_out=150,
+                balance=350,
+            ),
+            Transaction(
+                date=date.fromisoformat("2025-01-21"),
+                description="Transaction 3",
+                amount_in=1000,
+                amount_out=0,
+                balance=1350,
+            ),
+        ]
+    )
+
+    # ACT
+    local_storage_service.store_parsed_transactions(
+        parsed_transactions=parsed_transactions, bank_name="Test Bank", year=2025, month=1
+    )
+
+    # ASSERT
+    expected_json_data = {
+        "transactions": [
+            {
+                "date": "2025-01-01",
+                "description": "Transaction 1",
+                "amount_in": 100,
+                "amount_out": 0,
+                "balance": 500,
+            },
+            {
+                "date": "2025-01-05",
+                "description": "Transaction 2",
+                "amount_in": 0,
+                "amount_out": 150,
+                "balance": 350,
+            },
+            {
+                "date": "2025-01-21",
+                "description": "Transaction 3",
+                "amount_in": 1000,
+                "amount_out": 0,
+                "balance": 1350,
+            },
+        ]
+    }
+
+    with open(tmp_path / "Test Bank" / "parsed" / f"Statement_2025_01.json") as parsed_transactions_file:
+        json_data = json.load(parsed_transactions_file)
+        assert json_data == expected_json_data
 
 
-def test_get_parsed_transactions() -> None:
+def test_get_parsed_transactions(local_storage_service: LocalStorageService) -> None:
+    # ARRANGE
+    # ACT
+    # ASSERT
     pass
