@@ -29,7 +29,25 @@ def test_store_statement_stores_expected_data_in_expected_location(
         assert statement_file.read() == statement_content
 
 
-def test_get_statement(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
+def test_get_statement_file_exists(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
+    # ARRANGE
+    statement_content = "PDF-1.4 fake content"
+    bank_name = "Test Bank"
+
+    dir_path = tmp_path / bank_name / "raw"
+    dir_path.mkdir(parents=True, exist_ok=True)
+    statement_path = dir_path / "Statement_2025_01.pdf"
+    statement_path.touch()
+    statement_path.write_bytes(statement_content.encode("utf-8"))
+
+    # ACT
+    statement = local_storage_service.get_statement(bank_name=bank_name, year=2025, month=1)
+
+    # ASSERT
+    assert statement == statement_content
+
+
+def test_get_statement_file_does_not_exist(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
     # ARRANGE
     statement_content = "PDF-1.4 fake content"
     bank_name = "Test Bank"
@@ -112,7 +130,7 @@ def test_store_parsed_transactions(tmp_path: Path, local_storage_service: LocalS
         assert json_data == expected_json_data
 
 
-def test_get_parsed_transactions(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
+def test_get_parsed_transactions_file_exists(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
     # ARRANGE
     json_data = {
         "transactions": [
@@ -176,3 +194,7 @@ def test_get_parsed_transactions(tmp_path: Path, local_storage_service: LocalSto
         ]
     )
     assert parsed_transactions == expected_parsed_transactions
+
+
+def test_get_parsed_transactions_file_not_exists(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
+    pass

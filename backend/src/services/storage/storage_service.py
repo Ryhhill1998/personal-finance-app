@@ -3,6 +3,10 @@ from abc import ABC, abstractmethod
 from src.models import ParsedTransactions
 
 
+class StorageServiceException(Exception):
+    pass
+
+
 class StorageService(ABC):
     @abstractmethod
     def store_statement(self, statement_bytes: bytes, bank_name: str, year: int, month: int) -> None:

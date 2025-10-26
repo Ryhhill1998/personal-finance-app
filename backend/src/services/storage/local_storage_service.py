@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from src.models import ParsedTransactions
-from src.services.storage.storage_service import StorageService
+from src.services.storage.storage_service import StorageService, StorageServiceException
 
 
 class LocalStorageService(StorageService):
@@ -18,7 +20,11 @@ class LocalStorageService(StorageService):
     def get_statement(self, bank_name: str, year: int, month: int) -> str:
         dir_path = self.storage_dir_path / bank_name / "raw"
         file_path = dir_path / f"Statement_{year}_{month:02}.pdf"
-        return file_path.read_text()
+
+        try:
+            return file_path.read_text()
+        except FileNotFoundError:
+            raise StorageServiceException(f"Could not find file at path: {file_path}")
 
     def store_parsed_transactions(
         self, parsed_transactions: ParsedTransactions, bank_name: str, year: int, month: int
@@ -34,7 +40,12 @@ class LocalStorageService(StorageService):
         dir_path = self.storage_dir_path / bank_name / "parsed"
         file_path = dir_path / f"Statement_{year}_{month:02}.json"
 
-        with open(file_path) as parsed_file:
-            json_data = json.load(parsed_file)
+        try:
+            with open(file_path) as parsed_file:
+                json_data = json.load(parsed_file)
 
-        return ParsedTransactions(**json_data)
+            return ParsedTransactions(**json_data)
+        except FileNotFoundError:
+            raise StorageServiceException(f"Could not find file at path: {file_path}")
+        except ValidationError:
+            raise StorageServiceException(f"Failed to convert json data into ParsedTransactions object")
