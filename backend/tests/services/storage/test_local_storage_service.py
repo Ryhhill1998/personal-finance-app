@@ -6,6 +6,7 @@ import pytest
 
 from src.models import ParsedTransactions, Transaction
 from src.services.storage.local_storage_service import LocalStorageService
+from src.services.storage.storage_service import StorageServiceException
 
 
 @pytest.fixture
@@ -197,4 +198,5 @@ def test_get_parsed_transactions_file_exists(tmp_path: Path, local_storage_servi
 
 
 def test_get_parsed_transactions_file_not_exists(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
-    pass
+    with pytest.raises(StorageServiceException, match="Could not find file at path: "):
+        local_storage_service.get_parsed_transactions(bank_name="Test Bank", year=2025, month=1)
