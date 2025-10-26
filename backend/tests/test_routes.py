@@ -87,17 +87,20 @@ def test_get_all_transactions():
 
 
 def test_process_statement(tmp_path: Path, override_get_settings: None, override_get_model_service: None) -> None:
+    # ARRANGE
     bank_name = "test_bank"
     year = 2025
     month = 9
     fake_statement = BytesIO(b"%PDF-1.4 fake content")
     client = TestClient(app)
 
+    # ACT
     response = client.post(
         url=f"/process-statement/{bank_name}/{year}/{month}",
         files={"statement": (f"test_statement.pdf", fake_statement, "application/pdf")},
     )
 
+    # ASSERT
     assert response.status_code == 200
     output_dir_path = tmp_path / bank_name
     expected_file_name = f"Statement_2025_09"

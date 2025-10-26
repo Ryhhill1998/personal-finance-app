@@ -4,6 +4,7 @@ from fastapi import FastAPI, UploadFile
 from fastapi.params import Depends
 
 from src.dependencies import get_settings, get_model_statement_parser, get_local_storage_service
+from src.models import ParsedTransactions
 from src.services.statement_parser.model_statement_parser import ModelStatementParser
 from src.services.storage.storage_service import StorageService
 from src.settings import Settings
@@ -12,19 +13,20 @@ app = FastAPI()
 
 
 @app.get("/")
-async def root(settings: Annotated[Settings, Depends(get_settings)]):
-    print(settings)
-    return {"message": "Hello World"}
+async def health_check():
+    return {"status": "running"}
 
 
 @app.get("/transactions/bank/{bank_name}/{year}/{month}")
-async def get_bank_transactions_on_date(bank: str, year: int, month: int):
+async def get_bank_transactions_on_date(
+    bank_name: str, year: int, month: int, storage_service: Annotated[StorageService, Depends(get_local_storage_service)]
+) -> ParsedTransactions:
     """
     Gets all transactions for a specific bank for a specific year and month.
     If no data exists, raises a 404 Not Found error.
     """
 
-    return {"transactions": []}
+    return storage_service.get_parsed_transactions(bank_name=bank_name, year=year, month=month)
 
 
 @app.get("/transactions/{year}/{month}")
