@@ -70,17 +70,20 @@ class LocalStorageService(StorageService):
 
         for bank_dir in self.storage_dir_path.iterdir():
             bank_name = bank_dir.name
-            parsed_transactions_for_date = self.get_parsed_transactions_for_bank_for_date(
+            parsed_transactions_for_bank_for_date = self.get_parsed_transactions_for_bank_for_date(
                 bank_name=bank_name, year=year, month=month
             )
-            all_parsed_transactions_for_date.append(parsed_transactions_for_date)
+            all_parsed_transactions_for_date.append(parsed_transactions_for_bank_for_date)
 
         return all_parsed_transactions_for_date
 
-    def get_all_parsed_transactions(self, year: int, month: int) -> list[ParsedTransactions]:
-        all_parsed_transactions: list[ParsedTransactions] = []
+    def get_all_parsed_transactions(self) -> list[list[ParsedTransactions]]:
+        all_parsed_transactions: list[list[ParsedTransactions]] = []
 
         for bank_dir in self.storage_dir_path.iterdir():
             bank_name = bank_dir.name
+
+            all_parsed_transactions_for_bank = self.get_all_parsed_transactions_for_bank(bank_name)
+            all_parsed_transactions.append(all_parsed_transactions_for_bank)
 
         return all_parsed_transactions
