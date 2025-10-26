@@ -13,3 +13,6 @@ class Transaction(BaseModel):
 
 class ParsedTransactions(BaseModel):
     transactions: list[Transaction]
+    bank_name: str
+    year: int
+    month: int

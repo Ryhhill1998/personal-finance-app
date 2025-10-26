@@ -13,7 +13,7 @@ class StorageService(ABC):
         pass
 
     @abstractmethod
-    def get_statement(self, bank_name: str, year: int, month: int) -> str:
+    def get_statement_for_bank_on_date(self, bank_name: str, year: int, month: int) -> str:
         pass
 
     @abstractmethod
@@ -23,5 +23,5 @@ class StorageService(ABC):
         pass
 
     @abstractmethod
-    def get_parsed_transactions(self, bank_name: str, year: int, month: int) -> ParsedTransactions:
+    def get_parsed_transactions_for_bank_on_date(self, bank_name: str, year: int, month: int) -> ParsedTransactions:
         pass

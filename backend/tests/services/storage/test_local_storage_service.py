@@ -42,7 +42,7 @@ def test_get_statement_file_exists(tmp_path: Path, local_storage_service: LocalS
     statement_path.write_bytes(statement_content.encode("utf-8"))
 
     # ACT
-    statement = local_storage_service.get_statement(bank_name=bank_name, year=2025, month=1)
+    statement = local_storage_service.get_statement_for_bank_on_date(bank_name=bank_name, year=2025, month=1)
 
     # ASSERT
     assert statement == statement_content
@@ -50,7 +50,7 @@ def test_get_statement_file_exists(tmp_path: Path, local_storage_service: LocalS
 
 def test_get_statement_file_does_not_exist(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
     with pytest.raises(StorageServiceException, match="Could not find file at path: "):
-        local_storage_service.get_statement(bank_name="Test Bank", year=2025, month=1)
+        local_storage_service.get_statement_for_bank_on_date(bank_name="Test Bank", year=2025, month=1)
 
 
 def test_store_parsed_transactions(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
@@ -153,7 +153,7 @@ def test_get_parsed_transactions_file_exists(tmp_path: Path, local_storage_servi
         json.dump(json_data, parsed_transactions_file)
 
     # ACT
-    parsed_transactions = local_storage_service.get_parsed_transactions(bank_name="Test Bank", year=2025, month=1)
+    parsed_transactions = local_storage_service.get_parsed_transactions_for_bank_on_date(bank_name="Test Bank", year=2025, month=1)
 
     # ASSERT
     expected_parsed_transactions = ParsedTransactions(
@@ -186,7 +186,7 @@ def test_get_parsed_transactions_file_exists(tmp_path: Path, local_storage_servi
 
 def test_get_parsed_transactions_file_not_exists(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
     with pytest.raises(StorageServiceException, match="Could not find file at path: "):
-        local_storage_service.get_parsed_transactions(bank_name="Test Bank", year=2025, month=1)
+        local_storage_service.get_parsed_transactions_for_bank_on_date(bank_name="Test Bank", year=2025, month=1)
 
 
 def test_get_parsed_transactions_data_cannot_be_parsed(
@@ -203,4 +203,4 @@ def test_get_parsed_transactions_data_cannot_be_parsed(
 
     # ACT & ASSERT
     with pytest.raises(StorageServiceException, match="Failed to convert json data into ParsedTransactions object"):
-        local_storage_service.get_parsed_transactions(bank_name="Test Bank", year=2025, month=1)
+        local_storage_service.get_parsed_transactions_for_bank_on_date(bank_name="Test Bank", year=2025, month=1)

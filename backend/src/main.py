@@ -27,7 +27,7 @@ async def get_bank_transactions_on_date(
     """
 
     try:
-        return storage_service.get_parsed_transactions(bank_name=bank_name, year=year, month=month)
+        return storage_service.get_parsed_transactions_for_bank_on_date(bank_name=bank_name, year=year, month=month)
     except StorageServiceException:
         raise HTTPException(status_code=404, detail="Cannot find requested file")
 
