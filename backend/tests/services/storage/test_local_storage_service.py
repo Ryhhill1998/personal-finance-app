@@ -200,3 +200,20 @@ def test_get_parsed_transactions_file_exists(tmp_path: Path, local_storage_servi
 def test_get_parsed_transactions_file_not_exists(tmp_path: Path, local_storage_service: LocalStorageService) -> None:
     with pytest.raises(StorageServiceException, match="Could not find file at path: "):
         local_storage_service.get_parsed_transactions(bank_name="Test Bank", year=2025, month=1)
+
+
+def test_get_parsed_transactions_data_cannot_be_parsed(
+    tmp_path: Path, local_storage_service: LocalStorageService
+) -> None:
+    # ARRANGE
+    json_data = {}
+
+    dir_path = tmp_path / "Test Bank" / "parsed"
+    dir_path.mkdir(parents=True, exist_ok=True)
+
+    with open(dir_path / f"Statement_2025_01.json", "w") as parsed_transactions_file:
+        json.dump(json_data, parsed_transactions_file)
+
+    # ACT & ASSERT
+    with pytest.raises(StorageServiceException, match="Failed to convert json data into ParsedTransactions object"):
+        local_storage_service.get_parsed_transactions(bank_name="Test Bank", year=2025, month=1)
