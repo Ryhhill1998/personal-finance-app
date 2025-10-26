@@ -1,12 +1,12 @@
 from typing import Annotated
 
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, HTTPException
 from fastapi.params import Depends
 
 from src.dependencies import get_settings, get_model_statement_parser, get_local_storage_service
 from src.models import ParsedTransactions
 from src.services.statement_parser.model_statement_parser import ModelStatementParser
-from src.services.storage.storage_service import StorageService
+from src.services.storage.storage_service import StorageService, StorageServiceException
 from src.settings import Settings
 
 app = FastAPI()
@@ -26,7 +26,10 @@ async def get_bank_transactions_on_date(
     If no data exists, raises a 404 Not Found error.
     """
 
-    return storage_service.get_parsed_transactions(bank_name=bank_name, year=year, month=month)
+    try:
+        return storage_service.get_parsed_transactions(bank_name=bank_name, year=year, month=month)
+    except StorageServiceException:
+        raise HTTPException(status_code=404, detail="Cannot find requested file")
 
 
 @app.get("/transactions/{year}/{month}")
