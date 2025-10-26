@@ -23,5 +23,5 @@ class StorageService(ABC):
         pass
 
     @abstractmethod
-    def get_parsed_transactions_for_bank_on_date(self, bank_name: str, year: int, month: int) -> ParsedTransactions:
+    def get_parsed_transactions_for_bank_for_date(self, bank_name: str, year: int, month: int) -> ParsedTransactions:
         pass
