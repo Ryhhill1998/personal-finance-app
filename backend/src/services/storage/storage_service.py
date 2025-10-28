@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.models import ParsedTransactions
+from src.models import Transaction
 
 
 class StorageServiceException(Exception):
@@ -17,11 +17,9 @@ class StorageService(ABC):
         pass
 
     @abstractmethod
-    def store_parsed_transactions(
-        self, parsed_transactions: ParsedTransactions, bank_name: str, year: int, month: int
-    ) -> None:
+    def store_transactions(self, transactions: list[Transaction], bank_name: str, year: int, month: int) -> None:
         pass
 
     @abstractmethod
-    def get_parsed_transactions_for_bank_for_date(self, bank_name: str, year: int, month: int) -> ParsedTransactions:
+    def get_transactions_for_bank_for_date(self, bank_name: str, year: int, month: int) -> list[Transaction]:
         pass

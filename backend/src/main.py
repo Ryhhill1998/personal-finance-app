@@ -86,6 +86,6 @@ async def process_statement(
     parsed_transactions = await statement_parser.parse_transactions(statement_bytes.decode())
 
     # store parsed transactions
-    storage_service.store_parsed_transactions(
+    storage_service.store_transactions(
         parsed_transactions=parsed_transactions, bank_name=bank_name, year=year, month=month
     )

@@ -4,7 +4,7 @@ from pydantic_ai.providers.google import GoogleProvider
 from pydantic_ai.exceptions import AgentRunError, UsageLimitExceeded, UnexpectedModelBehavior
 from loguru import logger
 
-from src.models import ParsedTransactions
+from src.models import ParsedTransaction, Transaction
 
 
 class ModelStatementParserException(Exception):
@@ -42,13 +42,17 @@ class ModelStatementParser:
             model=model,
             model_settings=settings,
             instructions=self.instructions,
-            output_type=ParsedTransactions,
+            output_type=list[ParsedTransaction],
         )
 
-    async def parse_transactions(self, statement: str) -> ParsedTransactions:
+    async def parse_transactions(self, bank_name: str, statement: str) -> list[Transaction]:
         try:
             result = await self.agent.run(user_prompt=statement)
-            return result.output
+            parsed_transactions: list[ParsedTransaction] = result.output
+            return [
+                Transaction.from_parsed_transaction(bank_name=bank_name, parsed_transaction=transaction)
+                for transaction in parsed_transactions
+            ]
         except UsageLimitExceeded as e:
             logger.warning(f"Usage limit exceeded: {str(e)}")
             raise ModelStatementParserException(f"Usage limit exceeded: {str(e)}") from e

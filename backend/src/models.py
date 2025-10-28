@@ -3,7 +3,7 @@ from datetime import date
 from pydantic import BaseModel
 
 
-class Transaction(BaseModel):
+class ParsedTransaction(BaseModel):
     date: date
     description: str
     amount_in: float
@@ -11,8 +11,16 @@ class Transaction(BaseModel):
     balance: float
 
 
-class ParsedTransactions(BaseModel):
-    transactions: list[Transaction]
+class Transaction(ParsedTransaction):
     bank_name: str
-    year: int
-    month: int
+
+    @staticmethod
+    def from_parsed_transaction(bank_name: str, parsed_transaction: ParsedTransaction) -> "Transaction":
+        return Transaction(
+            bank_name=bank_name,
+            date=parsed_transaction.date,
+            description=parsed_transaction.description,
+            amount_in=parsed_transaction.amount_in,
+            amount_out=parsed_transaction.amount_out,
+            balance=parsed_transaction.balance,
+        )

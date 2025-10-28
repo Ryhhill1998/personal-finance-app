@@ -82,7 +82,7 @@ def test_store_parsed_transactions(tmp_path: Path, local_storage_service: LocalS
     )
 
     # ACT
-    local_storage_service.store_parsed_transactions(
+    local_storage_service.store_transactions(
         parsed_transactions=parsed_transactions, bank_name="Test Bank", year=2025, month=1
     )
 
