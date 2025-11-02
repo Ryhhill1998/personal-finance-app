@@ -1,14 +1,11 @@
-from typing import Annotated
+from fastapi import FastAPI
 
-from fastapi import FastAPI, UploadFile, HTTPException
-from fastapi.params import Depends
-
-from src.dependencies import get_model_statement_parser, get_local_storage_service
-from src.models import Transaction
-from src.services.statement_parser.model_statement_parser import ModelStatementParser
-from src.services.storage.storage_service import StorageService, StorageServiceException
+from src.routers import transactions, statements
 
 app = FastAPI()
+
+app.include_router(transactions.router)
+app.include_router(statements.router)
 
 
 @app.get("/")
