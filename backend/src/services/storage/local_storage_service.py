@@ -48,7 +48,7 @@ class LocalStorageService(StorageService):
         except FileNotFoundError:
             raise StorageServiceException(f"Could not find file at path: {file_path}")
         except ValidationError:
-            raise StorageServiceException(f"Failed to convert json data into ParsedTransactions object")
+            raise StorageServiceException(f"Failed to convert json data into StoredTransactions object")
 
     def get_all_transactions_for_bank(self, bank_name: str) -> list[Transaction]:
         all_transactions_for_bank: list[Transaction] = []
