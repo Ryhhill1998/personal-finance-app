@@ -81,11 +81,37 @@ class LocalStorageService(StorageService):
         all_transactions_for_date.sort(key=lambda t: t.date)
         return all_transactions_for_date
 
-    def get_all_transactions_for_year(self, year: int) -> list[Transaction]:
-        pass
-
     def get_all_transactions_for_bank_for_year(self, bank_name: str, year: int) -> list[Transaction]:
-        pass
+        all_transactions_for_bank_for_year: list[Transaction] = []
+        bank_year_dir_path = self.storage_dir_path / bank_name / str(year)
+
+        if not bank_year_dir_path.exists():
+            return []
+
+        for month_dir_path in bank_year_dir_path.iterdir():
+            month = month_dir_path.name
+
+            transactions_for_bank_for_date = self.get_transactions_for_bank_for_date(
+                bank_name=bank_name, year=year, month=int(month)
+            )
+            all_transactions_for_bank_for_year.extend(transactions_for_bank_for_date)
+
+        all_transactions_for_bank_for_year.sort(key=lambda t: t.date)
+        return all_transactions_for_bank_for_year
+
+    def get_all_transactions_for_year(self, year: int) -> list[Transaction]:
+        all_transactions_for_year: list[Transaction] = []
+
+        for bank_dir in self.storage_dir_path.iterdir():
+            bank_name = bank_dir.name
+
+            all_transactions_for_bank_for_year = self.get_all_transactions_for_bank_for_year(
+                bank_name=bank_name, year=year
+            )
+            all_transactions_for_year.extend(all_transactions_for_bank_for_year)
+
+        all_transactions_for_year.sort(key=lambda t: t.date)
+        return all_transactions_for_year
 
     def get_all_transactions(self) -> list[Transaction]:
         all_transactions: list[Transaction] = []

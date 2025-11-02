@@ -480,12 +480,52 @@ def test_get_all_transactions_for_date(mock_data: None, local_storage_service: L
     assert transactions == expected_transactions
 
 
-def test_get_all_transactions_for_year(mock_data: None, local_storage_service: LocalStorageService) -> None:
-    pass
-
-
 def test_get_all_transactions_for_bank_for_year(mock_data: None, local_storage_service: LocalStorageService) -> None:
-    pass
+    transactions = local_storage_service.get_all_transactions_for_bank_for_year(bank_name="lloyds", year=2025)
+
+    expected_transactions = [
+        Transaction(
+            bank_name="Lloyds",
+            date=date.fromisoformat("2025-01-05"),
+            description="Restaurant",
+            amount_in=0,
+            amount_out=80.00,
+            balance=2200.00,
+        ),
+        Transaction(
+            bank_name="Lloyds",
+            date=date.fromisoformat("2025-01-20"),
+            description="Freelance Payment",
+            amount_in=600,
+            amount_out=0,
+            balance=2800.00,
+        )
+    ]
+    assert transactions == expected_transactions
+
+
+def test_get_all_transactions_for_year(mock_data: None, local_storage_service: LocalStorageService) -> None:
+    transactions = local_storage_service.get_all_transactions_for_year(2024)
+
+    expected_transactions = [
+        Transaction(
+            bank_name="Lloyds",
+            date=date.fromisoformat("2024-12-15"),
+            description="Christmas Shopping",
+            amount_in=0,
+            amount_out=300,
+            balance=1800.00,
+        ),
+        Transaction(
+            bank_name="Lloyds",
+            date=date.fromisoformat("2024-12-31"),
+            description="New Year Deposit",
+            amount_in=500,
+            amount_out=0,
+            balance=2300.00,
+        )
+    ]
+    assert transactions == expected_transactions
 
 
 def test_get_all_transactions(mock_data: None, local_storage_service: LocalStorageService) -> None:
