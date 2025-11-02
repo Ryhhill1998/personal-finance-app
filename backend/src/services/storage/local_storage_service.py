@@ -65,6 +65,7 @@ class LocalStorageService(StorageService):
                 )
                 all_transactions_for_bank.extend(transactions_for_bank_for_date)
 
+        all_transactions_for_bank.sort(key=lambda t: t.date)
         return all_transactions_for_bank
 
     def get_all_transactions_for_date(self, year: int, month: int) -> list[Transaction]:
@@ -77,7 +78,14 @@ class LocalStorageService(StorageService):
             )
             all_transactions_for_date.extend(transactions_for_bank_for_date)
 
+        all_transactions_for_date.sort(key=lambda t: t.date)
         return all_transactions_for_date
+
+    def get_all_transactions_for_year(self, year: int) -> list[Transaction]:
+        pass
+
+    def get_all_transactions_for_bank_for_year(self, bank_name: str, year: int) -> list[Transaction]:
+        pass
 
     def get_all_transactions(self) -> list[Transaction]:
         all_transactions: list[Transaction] = []
@@ -87,4 +95,5 @@ class LocalStorageService(StorageService):
             transactions_for_bank = self.get_all_transactions_for_bank(bank_name=bank_name)
             all_transactions.extend(transactions_for_bank)
 
+        all_transactions.sort(key=lambda t: t.date)
         return all_transactions
