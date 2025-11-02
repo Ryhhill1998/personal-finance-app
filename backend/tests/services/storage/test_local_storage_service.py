@@ -489,11 +489,28 @@ def test_get_all_transactions_for_bank_for_year(mock_data: None, local_storage_s
 
 
 def test_get_all_transactions(mock_data: None, local_storage_service: LocalStorageService) -> None:
-    bank_name = "barclays"
-
-    transactions = local_storage_service.get_all_transactions_for_bank(bank_name)
+    transactions = local_storage_service.get_all_transactions()
 
     expected_transactions = [
+        # --- 2024 ---
+        Transaction(
+            bank_name="Lloyds",
+            date=date.fromisoformat("2024-12-15"),
+            description="Christmas Shopping",
+            amount_in=0,
+            amount_out=300,
+            balance=1800.00,
+        ),
+        Transaction(
+            bank_name="Lloyds",
+            date=date.fromisoformat("2024-12-31"),
+            description="New Year Deposit",
+            amount_in=500,
+            amount_out=0,
+            balance=2300.00,
+        ),
+
+        # --- 2025 ---
         Transaction(
             bank_name="Barclays",
             date=date.fromisoformat("2025-01-03"),
@@ -501,6 +518,22 @@ def test_get_all_transactions(mock_data: None, local_storage_service: LocalStora
             amount_in=0,
             amount_out=75.20,
             balance=1924.80,
+        ),
+        Transaction(
+            bank_name="Lloyds",
+            date=date.fromisoformat("2025-01-05"),
+            description="Restaurant",
+            amount_in=0,
+            amount_out=80.00,
+            balance=2200.00,
+        ),
+        Transaction(
+            bank_name="Monzo",
+            date=date.fromisoformat("2025-01-08"),
+            description="Online Subscription",
+            amount_in=0,
+            amount_out=12.99,
+            balance=987.01,
         ),
         Transaction(
             bank_name="Barclays",
@@ -511,12 +544,36 @@ def test_get_all_transactions(mock_data: None, local_storage_service: LocalStora
             balance=4424.80,
         ),
         Transaction(
+            bank_name="Monzo",
+            date=date.fromisoformat("2025-01-16"),
+            description="Gift Received",
+            amount_in=50,
+            amount_out=0,
+            balance=1037.01,
+        ),
+        Transaction(
+            bank_name="Lloyds",
+            date=date.fromisoformat("2025-01-20"),
+            description="Freelance Payment",
+            amount_in=600,
+            amount_out=0,
+            balance=2800.00,
+        ),
+        Transaction(
             bank_name="Barclays",
             date=date.fromisoformat("2025-01-25"),
             description="Electric Bill",
             amount_in=0,
             amount_out=120.50,
             balance=4304.30,
+        ),
+        Transaction(
+            bank_name="Monzo",
+            date=date.fromisoformat("2025-01-30"),
+            description="Groceries",
+            amount_in=0,
+            amount_out=47.85,
+            balance=989.16,
         ),
         Transaction(
             bank_name="Barclays",
