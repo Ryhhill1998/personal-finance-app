@@ -24,3 +24,7 @@ class Transaction(ParsedTransaction):
             amount_out=parsed_transaction.amount_out,
             balance=parsed_transaction.balance,
         )
+
+
+class StoredTransactions(BaseModel):
+    transactions: list[Transaction]

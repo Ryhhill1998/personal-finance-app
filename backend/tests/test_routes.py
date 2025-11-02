@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from src.dependencies import get_settings, get_model_statement_parser
 from src.main import app
-from src.models import ParsedTransactions, Transaction
+from src.models import Transaction
 from src.settings import Settings
 
 
@@ -34,32 +34,33 @@ def override_get_settings(tmp_path: Path) -> Generator[None, Any, None]:
 @pytest.fixture
 def override_get_model_service(tmp_path: Path) -> Generator[None, Any, None]:
     class MockModelService:
-        async def parse_transactions(self, statement: str) -> ParsedTransactions:
-            return ParsedTransactions(
-                transactions=[
-                    Transaction(
-                        date=date.fromisoformat("2025-01-01"),
-                        description="Transaction 1",
-                        amount_in=100,
-                        amount_out=0,
-                        balance=500,
-                    ),
-                    Transaction(
-                        date=date.fromisoformat("2025-01-05"),
-                        description="Transaction 2",
-                        amount_in=0,
-                        amount_out=150,
-                        balance=350,
-                    ),
-                    Transaction(
-                        date=date.fromisoformat("2025-01-21"),
-                        description="Transaction 3",
-                        amount_in=1000,
-                        amount_out=0,
-                        balance=1350,
-                    ),
-                ]
-            )
+        async def parse_transactions(self, bank_name: str, statement: str) -> list[Transaction]:
+            return [
+                Transaction(
+                    bank_name="Test Bank",
+                    date=date.fromisoformat("2025-01-01"),
+                    description="Transaction 1",
+                    amount_in=100,
+                    amount_out=0,
+                    balance=500,
+                ),
+                Transaction(
+                    bank_name="Test Bank",
+                    date=date.fromisoformat("2025-01-05"),
+                    description="Transaction 2",
+                    amount_in=0,
+                    amount_out=150,
+                    balance=350,
+                ),
+                Transaction(
+                    bank_name="Test Bank",
+                    date=date.fromisoformat("2025-01-21"),
+                    description="Transaction 3",
+                    amount_in=1000,
+                    amount_out=0,
+                    balance=1350,
+                ),
+            ]
 
     app.dependency_overrides[get_model_statement_parser] = lambda: MockModelService()
     yield
@@ -143,9 +144,8 @@ def test_process_statement(tmp_path: Path, override_get_settings: None, override
 
     # ASSERT
     assert response.status_code == 200
-    output_dir_path = tmp_path / bank_name
-    expected_file_name = f"Statement_2025_09"
-    raw_file_path = output_dir_path / "raw" / f"{expected_file_name}.pdf"
-    parsed_file_path = output_dir_path / "parsed" / f"{expected_file_name}.json"
+    output_dir_path = tmp_path / bank_name / "2025" / "09"
+    raw_file_path = output_dir_path / "statement.pdf"
+    parsed_file_path = output_dir_path / "transactions.json"
     assert raw_file_path.is_file()
     assert parsed_file_path.is_file()

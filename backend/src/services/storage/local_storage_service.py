@@ -3,7 +3,7 @@ from pathlib import Path
 
 from pydantic import ValidationError
 
-from src.models import Transaction
+from src.models import Transaction, StoredTransactions
 from src.services.storage.storage_service import StorageService, StorageServiceException
 
 
@@ -31,9 +31,10 @@ class LocalStorageService(StorageService):
         dir_path = self.storage_dir_path / bank_name / str(year) / f"{month:02}"
         dir_path.mkdir(parents=True, exist_ok=True)
         file_path = dir_path / "transactions.json"
+        stored_transactions = StoredTransactions(transactions=transactions)
 
         with open(file_path, "w") as parsed_file:
-            json.dump([transaction.model_dump_json() for transaction in transactions], parsed_file)
+            parsed_file.write(stored_transactions.model_dump_json())
 
     def get_transactions_for_bank_for_date(self, bank_name: str, year: int, month: int) -> list[Transaction]:
         file_path = self.storage_dir_path / bank_name / str(year) / f"{month:02}" / "transactions.json"
@@ -42,7 +43,8 @@ class LocalStorageService(StorageService):
             with open(file_path) as parsed_file:
                 json_data = json.load(parsed_file)
 
-            return [Transaction(**entry) for entry in json_data]
+            stored_transactions = StoredTransactions(**json_data)
+            return stored_transactions.transactions
         except FileNotFoundError:
             raise StorageServiceException(f"Could not find file at path: {file_path}")
         except ValidationError:
