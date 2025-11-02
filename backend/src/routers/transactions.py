@@ -6,10 +6,10 @@ from src.dependencies import get_local_storage_service
 from src.models import Transaction
 from src.services.storage.storage_service import StorageService, StorageServiceException
 
-router = APIRouter(prefix="statements")
+router = APIRouter(prefix="/transactions")
 
 
-@router.get("/transactions")
+@router.get("/")
 async def get_all_transactions_for_all_banks():
     """
     Gets all transactions for all banks for all dates.

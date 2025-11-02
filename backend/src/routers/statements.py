@@ -6,7 +6,7 @@ from src.dependencies import get_local_storage_service, get_model_statement_pars
 from src.services.statement_parser.model_statement_parser import ModelStatementParser
 from src.services.storage.storage_service import StorageService
 
-router = APIRouter(prefix="statements")
+router = APIRouter(prefix="/statements")
 
 
 @router.post("/{bank_name}/{year}/{month}")
