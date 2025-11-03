@@ -4,39 +4,10 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from src.dependencies import get_local_storage_service
 from src.models import Transaction
-from src.services.storage.storage_service import StorageService, StorageServiceException
+from src.services.storage.storage_service import StorageService, StorageServiceException, \
+    StorageServiceNotFoundException
 
 router = APIRouter(prefix="/transactions")
-
-
-@router.get("/")
-async def get_all_transactions_for_all_banks():
-    """
-    Gets all transactions for all banks for all dates.
-    If no data exists, raises a 404 Not Found error.
-    """
-
-    return {"transactions": []}
-
-
-@router.get("/bank/{bank_name}")
-async def get_all_transactions_for_bank(year: int, month: int):
-    """
-    Gets all transactions for all banks for a specific year and month.
-    If no data exists, raises a 404 Not Found error.
-    """
-
-    return {"transactions": []}
-
-
-@router.get("/{year}/{month}")
-async def get_transactions_for_all_banks_for_date(year: int, month: int):
-    """
-    Gets all transactions for all banks for a specific year and month.
-    If no data exists, raises a 404 Not Found error.
-    """
-
-    return {"transactions": []}
 
 
 @router.get("/")
@@ -72,5 +43,7 @@ async def get_transactions(
             return storage_service.get_all_transactions()
         else:
             raise HTTPException(status_code=400, detail="Invalid bank_name, year, month combination")
-    except StorageServiceException:
+    except StorageServiceNotFoundException:
         raise HTTPException(status_code=404, detail="Cannot find requested file")
+    except StorageServiceException:
+        raise HTTPException(status_code=500, detail="Invalid file")

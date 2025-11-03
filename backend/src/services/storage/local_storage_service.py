@@ -4,7 +4,8 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from src.models import Transaction, StoredTransactions
-from src.services.storage.storage_service import StorageService, StorageServiceException
+from src.services.storage.storage_service import StorageService, StorageServiceException, \
+    StorageServiceNotFoundException
 
 
 class LocalStorageService(StorageService):
@@ -46,7 +47,7 @@ class LocalStorageService(StorageService):
             stored_transactions = StoredTransactions(**json_data)
             return stored_transactions.transactions
         except FileNotFoundError:
-            raise StorageServiceException(f"Could not find file at path: {file_path}")
+            raise StorageServiceNotFoundException(f"Could not find file at path: {file_path}")
         except ValidationError:
             raise StorageServiceException(f"Failed to convert json data into StoredTransactions object")
 
