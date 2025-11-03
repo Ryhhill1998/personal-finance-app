@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from src.main import app
 
 
-def test_get_bank_transactions_on_date(tmp_path: Path, override_get_settings: None) -> None:
+def test_get_bank_transactions_for_date(tmp_path: Path, override_get_settings: None) -> None:
     # ARRANGE
     bank_name = "Test Bank"
     transactions_list = [
