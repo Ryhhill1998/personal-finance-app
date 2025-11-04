@@ -29,20 +29,25 @@ async def get_transactions(
     """
 
     try:
+        if bank_name is None and year is None and month is None:
+            return storage_service.get_all_transactions()
+
+        if bank_name is not None and year is None and month is None:
+            return storage_service.get_all_transactions_for_bank(bank_name)
+
+        if bank_name is not None and year is not None and month is None:
+            return storage_service.get_all_transactions_for_bank_for_year(bank_name=bank_name, year=year)
+
         if bank_name is not None and year is not None and month is not None:
             return storage_service.get_transactions_for_bank_for_date(bank_name=bank_name, year=year, month=month)
-        elif bank_name is not None and year is not None:
-            return storage_service.get_all_transactions_for_bank_for_year(bank_name=bank_name, year=year)
-        elif bank_name is not None:
-            return storage_service.get_all_transactions_for_bank(bank_name)
-        elif year is not None and month is not None:
-            return storage_service.get_all_transactions_for_date(year=year, month=month)
-        elif year is not None:
+
+        if bank_name is None and year is not None and month is None:
             return storage_service.get_all_transactions_for_year(year)
-        elif bank_name is None and year is None and month is None:
-            return storage_service.get_all_transactions()
-        else:
-            raise HTTPException(status_code=400, detail="Invalid bank_name, year, month combination")
+
+        if bank_name is None and year is not None and month is not None:
+            return storage_service.get_all_transactions_for_date(year=year, month=month)
+
+        raise HTTPException(status_code=400, detail="Invalid bank_name, year, month combination")
     except StorageServiceNotFoundException:
         raise HTTPException(status_code=404, detail="Cannot find requested file")
     except StorageServiceException:
